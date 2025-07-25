@@ -30,7 +30,7 @@ public static class GlobalConstant
         BlockSpinRight,
         BlockTick
     }
-    
+
     /**
      * 所有输入类型，包括游戏控制
      */
@@ -56,7 +56,7 @@ public static class GlobalConstant
         Left,   // 向左
         Right   // 向右
     }
-    
+
     /**
      * 游戏运行状态
      */
@@ -77,4 +77,6 @@ public static class GlobalConstant
         TypeFourWay,
         TypeDebug
     }
+    
+    public const string DEFAULT_TEXTURE_PATH = "res://assets/textures/Tetris_black_block.png"; 
 }
