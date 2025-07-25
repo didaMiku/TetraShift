@@ -175,7 +175,25 @@ public class Tetromino
         if (_gameType == GlobalConstant.GameType.TypeFourWay)
             _blockPosition = new IntVector2(_width / 2 - offsetX, _height / 2 - offsetY);
         else
-            _blockPosition = new IntVector2(_width / 2 - offsetX, 0);    
+        {
+            // 因为方块顶部可能会有空行，所以设置偏移量使方块生成时不会有空
+            int emptyOffsetY = 0;
+            bool isEmpty = false;
+            for (int i = 0; i < _blockStatus.GetLength(0); i++)
+            {
+                isEmpty = true;
+                for (int j = 0; j < _blockStatus.GetLength(1); j++)
+                    if (_blockStatus[i, j] == 1)
+                    {
+                        isEmpty = false;
+                        break;
+                    }
+            }
+            if (isEmpty)
+                emptyOffsetY--;
+            _blockPosition = new IntVector2(_width / 2 - offsetX, emptyOffsetY);
+        }
+                
         UpdateFallingBlockPositions();
     }
 
