@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://bs2s5fd0befph"]
+
+[ext_resource type="Script" uid="uid://be2dxyasm74vj" path="res://scripts/test/LogicTest.cs" id="1_nuvnu"]
+
+[node name="Node2D" type="Node2D"]
+position = Vector2(0, 14)
+script = ExtResource("1_nuvnu")
+
+[node name="InputLine" type="LineEdit" parent="."]
+offset_top = -9.0
+offset_right = 68.5625
+offset_bottom = 22.0
+
+[node name="SubmitButton" type="Button" parent="."]
+offset_left = 81.0
+offset_top = 1.0
+offset_right = 89.0
+offset_bottom = 9.0
+
+[node name="OutputLabel" type="Label" parent="."]
+offset_left = 16.0
+offset_top = 32.0
+offset_right = 161.0
+offset_bottom = 121.0

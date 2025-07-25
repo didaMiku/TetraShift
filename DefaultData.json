@@ -1,0 +1,60 @@
+{
+  "DefaultBlocks": [
+    {
+      "name": "O",
+      "texturePath": "res://textures/Tetris_black_block.png",
+      "shaderCode": "",
+      "shape": [[1, 1], 
+                [1, 1]]
+    },
+    {
+      "name": "I",
+      "texturePath": "res://textures/Tetris_black_block.png",
+      "shaderCode": "",
+      "shape": [[0, 0, 0, 0], 
+                [1, 1, 1, 1], 
+                [0, 0, 0, 0], 
+                [0, 0, 0, 0]]
+    },
+    {
+      "name": "L",
+      "texturePath": "res://textures/Tetris_black_block.png",
+      "shaderCode": "",
+      "shape": [[0, 0, 1], 
+                [1, 1, 1], 
+                [0, 0, 0]]
+    },
+    {
+      "name": "J",
+      "texturePath": "res://textures/Tetris_black_block.png",
+      "shaderCode": "",
+      "shape": [[1, 0, 0], 
+                [1, 1, 1], 
+                [0, 0, 0]]
+    },
+    {
+      "name": "T",
+      "texturePath": "res://textures/Tetris_black_block.png",
+      "shaderCode": "",
+      "shape": [[0, 1, 0], 
+                [1, 1, 1], 
+                [0, 0, 0]]
+    },
+    {
+      "name": "S",
+      "texturePath": "res://textures/Tetris_black_block.png",
+      "shaderCode": "",
+      "shape": [[0, 1, 1], 
+                [1, 1, 0], 
+                [0, 0, 0]]
+    },
+    {
+      "name": "Z",
+      "texturePath": "res://textures/Tetris_black_block.png",
+      "shaderCode": "",
+      "shape": [[1, 1, 0], 
+                [0, 1, 1], 
+                [0, 0, 0]]
+    }
+  ]
+}
