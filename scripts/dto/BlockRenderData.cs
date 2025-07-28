@@ -9,8 +9,17 @@ namespace Tetris.scripts.dto;
 /// </summary>
 public class BlockRenderData
 {
+    /**
+     * 渲染类型，比如显示、隐藏、虚化
+     */
     private GlobalConstant.BlockRenderType _renderType;
+    /**
+     * 贴图路径
+     */
     private string _texturePath;
+    /**
+     * 着色器源码
+     */
     private string _shaderCode;
 
     public BlockRenderData(GlobalConstant.BlockRenderType renderType, string texturePath, string shaderCode)

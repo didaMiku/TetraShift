@@ -10,13 +10,37 @@ namespace Tetris.scripts.dto;
 /// </summary>
 public class BlockRenderDto
 {
+    /**
+     * 方块渲染数组，包含每个方块的显示模式、贴图路径、着色器源码等内容
+     */
     private BlockRenderData[,] _blockRenderArray;
+    /**
+     * 游戏状态
+     */
     private GlobalConstant.GameState _gameState;
+    /**
+     * 分数
+     */
     private int _score;
+    /**
+     * 处理的方块计数
+     */
     private int _handledCount;
+    /**
+     * 当前下落方块
+     */
     private string _currentBlock;
+    /**
+     * 下一下落方块
+     */
     private string _nextBlock;
+    /**
+     * 当前下落方向
+     */
     private GlobalConstant.GravityDirection _gravityDirection;
+    /**
+     * 下一下落方向
+     */
     private GlobalConstant.GravityDirection _nextGravityDirection;
 
     public BlockRenderDto(BlockRenderData[,] blockRenderArray, GlobalConstant.GameState gameState, int score, int handledCount,
