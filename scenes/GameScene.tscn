@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://c634bvvb1h7mc"]
+
+[ext_resource type="PackedScene" uid="uid://cst6vd1xmd7yl" path="res://scenes/PauseScene.tscn" id="1_vh257"]
+[ext_resource type="Script" uid="uid://dqhgq702u5ooh" path="res://scripts/UI/GameScene.cs" id="1_xy3my"]
+
+[node name="GameScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xy3my")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "GameScene"
+
+[node name="PauseScene" parent="." instance=ExtResource("1_vh257")]
+visible = false
+layout_mode = 1
+
+[node name="PauseButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 47.0
+offset_right = 68.0
+offset_bottom = 78.0
+scale = Vector2(1.38235, 1.375)
+text = "Pause"

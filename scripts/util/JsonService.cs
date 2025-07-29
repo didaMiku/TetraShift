@@ -11,7 +11,7 @@ namespace Tetris.scripts.util;
 /// BlockJsonService 提供对用户数据 UserData.json 的操作服务。
 /// 包括初始化、重置、加载和保存方块数据。
 /// </summary>
-public static class BlockJsonService
+public static class JsonService
 {
     /**
      *用户数据路径：每个用户 OS.GetUserDataDir() 下的 UserData.json

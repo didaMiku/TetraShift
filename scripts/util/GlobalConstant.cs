@@ -77,6 +77,19 @@ public static class GlobalConstant
         TypeFourWay,
         TypeDebug
     }
-    
+
+    /**
+     * UI状态枚举
+     */
+    public enum UISceneState
+    {
+        SceneMenu,          // 首页
+        SceneGame,          // 游戏界面
+        ScenePause,         // 暂停界面
+        SceneGameConfig,    // 游戏设置界面
+        SceneBlockConfig,   // 方块设置界面
+        SceneGameSave       // 游戏存档界面
+    }
+
     public const string DEFAULT_TEXTURE_PATH = "res://assets/textures/Tetris_black_block.png"; 
 }

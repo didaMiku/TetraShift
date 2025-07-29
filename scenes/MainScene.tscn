@@ -1,0 +1,34 @@
+[gd_scene load_steps=7 format=3 uid="uid://be0d4rqj6fyq"]
+
+[ext_resource type="Script" uid="uid://cfudq6432aepu" path="res://scripts/UI/MainNode.cs" id="1_1wiy7"]
+[ext_resource type="PackedScene" uid="uid://d0pew8y7gyi87" path="res://scenes/MenuScene.tscn" id="1_ygjfp"]
+[ext_resource type="PackedScene" uid="uid://c634bvvb1h7mc" path="res://scenes/GameScene.tscn" id="2_1wiy7"]
+[ext_resource type="PackedScene" uid="uid://r3b2o0dvkrv7" path="res://scenes/GameConfigScene.tscn" id="4_x537r"]
+[ext_resource type="PackedScene" uid="uid://balwmqrrtrf73" path="res://scenes/BlockConfigScene.tscn" id="5_cfq0f"]
+[ext_resource type="PackedScene" uid="uid://jkhneqj8763w" path="res://scenes/GameSaveScene.tscn" id="6_pjux3"]
+
+[node name="MainScene" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_1wiy7")
+
+[node name="MenuScene" parent="." instance=ExtResource("1_ygjfp")]
+visible = false
+
+[node name="GameScene" parent="." instance=ExtResource("2_1wiy7")]
+visible = false
+layout_mode = 1
+
+[node name="GameConfigScene" parent="." instance=ExtResource("4_x537r")]
+visible = false
+layout_mode = 1
+
+[node name="BlockConfigScene" parent="." instance=ExtResource("5_cfq0f")]
+visible = false
+layout_mode = 1
+
+[node name="GameSaveScene" parent="." instance=ExtResource("6_pjux3")]
+visible = false
+layout_mode = 1

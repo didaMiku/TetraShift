@@ -10,9 +10,9 @@ public partial class LogicTest : Node
 
     public override void _Ready()
     {
-        BlockJsonService.InitializeUserData();
+        JsonService.InitializeUserData();
         // BlockJsonService.ResetUserDataToDefault();
-        BlockJsonService.LoadBlocksToDictionary();
+        JsonService.LoadBlocksToDictionary();
         _grid.HandleOperation(GlobalConstant.BlockOperations.BlockDown);
         GD.Print(BlockDictionary.GetAll().Count());
         GD.Print("逻辑测试已启动，等待键盘输入...");
@@ -28,6 +28,20 @@ public partial class LogicTest : Node
             {
                 Simulate(input);
             }
+        }
+    }
+
+    private float _tickTimer = 0f;
+    private float _tickInterval = 1.0f; // 每 0.1 秒一次（即 10 tick 每秒）
+
+    public override void _Process(double delta)
+    {
+        _tickTimer += (float)delta;
+        while (_tickTimer >= _tickInterval)
+        {
+            _tickTimer -= _tickInterval;
+            var result = _grid.HandleOperation(GlobalConstant.BlockOperations.BlockTick); // 调用你的 Tick 逻辑
+            GD.Print($"输入: Tick => 输出: \n{result}");
         }
     }
 

@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://cst6vd1xmd7yl"]
+
+[ext_resource type="Script" uid="uid://opk6ik6uw817" path="res://scripts/UI/PauseScene.cs" id="1_ik3a5"]
+
+[node name="PauseScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ik3a5")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "PauseScene"
+
+[node name="ContinueButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 41.0
+offset_right = 106.0
+offset_bottom = 72.0
+text = "Continue"
+
+[node name="QuitButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 90.0
+offset_right = 85.0
+offset_bottom = 121.0
+text = "Quit"
