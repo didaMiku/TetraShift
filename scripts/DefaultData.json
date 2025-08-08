@@ -1,5 +1,5 @@
 {
-  "DefaultBlocks": [
+  "blockData": [
     {
       "name": "O",
       "texturePath": "res://assets/textures/Tetris_black_block.png",
@@ -56,5 +56,11 @@
                 [0, 1, 1], 
                 [0, 0, 0]]
     }
-  ]
+  ],
+
+  "gameConfig": {
+    "width": 10,
+    "height": 15,
+    "gameType": "TypeClassic"
+  }
 }

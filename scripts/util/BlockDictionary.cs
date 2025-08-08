@@ -51,4 +51,9 @@ public static class BlockDictionary
     {
         return _data.ContainsKey(name);
     }
+
+    public static Dictionary<string, BlockData> GetDictionary()
+    {
+        return _data;
+    }
 }

@@ -1,213 +1,249 @@
-using System.IO;
 using Godot;
-using GDict = Godot.Collections.Dictionary;
-using GArray = Godot.Collections.Array;
+using System;
+using Godot.Collections;
+using System.Collections.Generic;
+using System.Text.Json;
 using Tetris.scripts.dto;
+using Tetris.scripts.util;
 
-
-namespace Tetris.scripts.util;
 
 /// <summary>
-/// BlockJsonService 提供对用户数据 UserData.json 的操作服务。
-/// 包括初始化、重置、加载和保存方块数据。
+/// JSON 读写服务
 /// </summary>
 public static class JsonService
 {
-    /**
-     *用户数据路径：每个用户 OS.GetUserDataDir() 下的 UserData.json
-     */ 
-    private static readonly string UserDataPath = Path.Combine(OS.GetUserDataDir(), "UserData.json");
-    /**
-     * 打包资源路径：项目 res:// 根目录下的 DefaultData.json
-     */
-    private const string DefaultDataPath = "res://DefaultData.json";
-
+    private static readonly string DefaultDataPath = "res://scripts/DefaultData.json";
+    private static readonly string UserDataPath = System.IO.Path.Combine(OS.GetUserDataDir(), "UserData.json");
+    private static Godot.Collections.Dictionary _cachedRoot; // GDict 缓存
 
     /**
-     * 初始化：如果不存在 UserData.json，则创建并把 DefaultData.json 的 DefaultBlocks 覆盖到 Blocks。
+     * 初始化用户数据
      */
     public static void InitializeUserData()
     {
-        if (Godot.FileAccess.FileExists(UserDataPath))
+        if (FileAccess.FileExists(UserDataPath))
         {
-            GD.PushWarning("UserData.json 已存在，地址：" + UserDataPath);
+            GD.Print("UserData 已存在，跳过初始化。地址：" + UserDataPath);
+            UpdateRoot();
+            UpdateBlockDictionary();
             return;
         }
+        GD.Print("UserData 不存在，复制默认数据。地址：" + UserDataPath);
 
-        // 读取打包的 DefaultData.json
-        string defaultJson = Godot.FileAccess
-            .Open(DefaultDataPath, Godot.FileAccess.ModeFlags.Read)
-            .GetAsText();
+        // 复制 DefaultData.json 内容到 UserData.json
+        using var defaultFile = FileAccess.Open(DefaultDataPath, FileAccess.ModeFlags.Read);
+        var content = defaultFile.GetAsText();
 
-        // 解析
-        var parser = new Json();
-        Error err = parser.Parse(defaultJson);
-        if (err != Error.Ok)
-        {
-            GD.PushError($"解析 DefaultData.json 失败：{parser.GetErrorMessage()} （行 {parser.GetErrorLine()}）");
-            return;
-        }
+        using var userFile = FileAccess.Open(UserDataPath, FileAccess.ModeFlags.Write);
+        userFile.StoreString(content);
 
-        // 拿到根字典并取出 DefaultBlocks
-        var defaultRoot = (GDict)parser.Data;
-        var defaultBlocks = defaultRoot.ContainsKey("DefaultBlocks")
-            ? (GArray)defaultRoot["DefaultBlocks"]
-            : new GArray();
-
-        // 构造用户数据，只包含 Blocks
-        var userRoot = new GDict
-        {
-            ["Blocks"] = defaultBlocks
-        };
-
-        // 写入用户目录
-        WriteJsonToFile(UserDataPath, userRoot);
+        UpdateRoot();
+        UpdateBlockDictionary();
     }
 
     /**
-     * 重置：强制删除/覆盖 UserData.json，把 DefaultData.json 的 DefaultBlocks 写入 Blocks。
+     * 更新全局的方块信息字典
      */
-    public static void ResetUserDataToDefault()
+    public static void UpdateBlockDictionary()
     {
-        // 读取 DefaultData.json
-        string defaultJson = Godot.FileAccess
-            .Open(DefaultDataPath, Godot.FileAccess.ModeFlags.Read)
-            .GetAsText();
-
-        // 解析
-        var parser = new Json();
-        Error err = parser.Parse(defaultJson);
-        if (err != Error.Ok)
+        var blockData = GetField("blockData");
+        if (blockData.VariantType != Variant.Type.Array)
         {
-            GD.PushError($"解析 DefaultData.json 失败：{parser.GetErrorMessage()} （行 {parser.GetErrorLine()}）");
             return;
         }
-
-        // 取 DefaultBlocks
-        var defaultRoot = (GDict)parser.Data;
-        var defaultBlocks = defaultRoot.ContainsKey("DefaultBlocks")
-            ? (GArray)defaultRoot["DefaultBlocks"]
-            : new GArray();
-
-        // 构造并覆盖写入
-        var userRoot = new GDict
-        {
-            ["Blocks"] = defaultBlocks
-        };
-        WriteJsonToFile(UserDataPath, userRoot);
-    }
-
-    /**
-     * 读取：把 UserData.json 的 Blocks 字段解析成 BlockData，填充到全局 BlockDictionary。
-     */
-    public static void LoadBlocksToDictionary()
-    {
-        if (!Godot.FileAccess.FileExists(UserDataPath))
-        {
-            GD.PushWarning("UserData.json 不存在，正在创建默认用户数据…");
-            InitializeUserData();
-        }
-
-        // 读取文本
-        string jsonText = Godot.FileAccess
-            .Open(UserDataPath, Godot.FileAccess.ModeFlags.Read)
-            .GetAsText();
-
-        // 解析
-        var parser = new Json();
-        Error err = parser.Parse(jsonText);
-        if (err != Error.Ok)
-        {
-            GD.PushError($"解析 UserData.json 失败：{parser.GetErrorMessage()} （行 {parser.GetErrorLine()}）");
-            return;
-        }
-
-        // 根字典
-        var root = (GDict)parser.Data;
-
-        // 取 Blocks
-        var blocks = root.ContainsKey("Blocks")
-            ? (GArray)root["Blocks"]
-            : new GArray();
-
-        // 清空现有字典
+        Godot.Collections.Array blockDataArray = blockData.AsGodotArray();
         BlockDictionary.Clear();
-
-        // 反序列化到 BlockDictionary
-        foreach (var obj in blocks)
+        foreach (var data in blockDataArray)
         {
-            var item = (GDict)obj;
-            string name = item["name"].ToString();
-            string texturePath = item["texturePath"].ToString();
-            string shaderCode = item["shaderCode"].ToString();
-            var shapeArr = (GArray)item["shape"];
-
-            int rows = shapeArr.Count;
-            int cols = ((GArray)shapeArr[0]).Count;
-            var shape = new int[rows, cols];
-            for (int i = 0; i < rows; i++)
+            if (data.VariantType != Variant.Type.Dictionary)
             {
-                var row = (GArray)shapeArr[i];
-                for (int j = 0; j < cols; j++)
-                    shape[i, j] = (int)(long)row[j];
+                GD.PushWarning("blockData 中存在非字典元素，已跳过");
+                continue;
             }
-
-            var data = new BlockData(name, shape, texturePath, shaderCode);
-            BlockDictionary.Add(name, data);
+            var blockDict = (Godot.Collections.Dictionary)data;
+            string name = (string)blockDict["name"];
+            string texturePath = (string)blockDict["texturePath"];
+            string shaderCode = (string)blockDict["shaderCode"];
+            // 二维数组较为特殊，需要单独处理
+            var shapeArrayVariant = blockDict["shape"];
+            var shapeRows = shapeArrayVariant.AsGodotArray();
+            int rowCount = shapeRows.Count;
+            int colCount = ((Godot.Collections.Array)shapeRows[0]).Count;
+            int[,] shape = new int[rowCount, colCount];
+            for (int i = 0; i < rowCount; i++)
+            {
+                var row = (Godot.Collections.Array)shapeRows[i];
+                for (int j = 0; j < colCount; j++)
+                {
+                    shape[i, j] = (int)(long)row[j]; // 注意 Variant → long → int
+                }
+            }
+            // 添加到字典
+            BlockDictionary.Add(name, new BlockData(name, (int[,])shape, texturePath, shaderCode));
         }
     }
+
+    /**
+     * 同步JSON中的方块信息
+     */
+    public static void SyncBlockData()
+    {
+        System.Collections.Generic.Dictionary<string, BlockData> blockData = BlockDictionary.GetDictionary();
+        var blockDataArray = new Godot.Collections.Array();
+        foreach (var data in blockData.Values)
+        {
+            var blockDict = new Godot.Collections.Dictionary();
+            blockDict["name"] = data.GetName();
+            blockDict["texturePath"] = data.GetTexturePath();
+            blockDict["shaderCode"] = data.GetShaderCode();
+            var shapeArray = data.GetShape();
+            var shapeRows = new Godot.Collections.Array();
+            for (int i = 0; i < shapeArray.GetLength(0); i++)
+            {
+                var shapeRow = new Godot.Collections.Array();
+                for (int j = 0; j < shapeArray.GetLength(1); j++)
+                {
+                    shapeRow.Add(shapeArray[i, j]);
+                }
+                shapeRows.Add(shapeRow);
+            }
+            blockDict["shape"] = shapeRows;
+            blockDataArray.Add(blockDict);
+        }
+        SetField("blockData", blockDataArray);
+    }
+
+    /**
+     * 获取游戏配置
+     */
+    public static GameConfigDto GetGameConfig()
+    {
+        var config = GetField("gameConfig");
+        if (config.VariantType != Variant.Type.Dictionary)
+        {
+            GD.Print("无法获取游戏配置");
+            return new GameConfigDto();
+        }
+        Godot.Collections.Dictionary configDict = config.AsGodotDictionary();
+        int width = (int)configDict["width"];
+        int height = (int)configDict["height"];
+        string gameTypeStr = (string)configDict["gameType"];
+        switch (gameTypeStr)
+        {
+            case "TypeClassic":
+                return new GameConfigDto(width, height, GlobalConstant.GameType.TypeClassic);
+            case "TypeTetris":
+                return new GameConfigDto(width, height, GlobalConstant.GameType.TypeFourWay);
+            default:
+                GD.Print("无法获取游戏类型");
+                return new GameConfigDto();
+        }
+    }
+
+    /**
+     * 设置游戏配置
+     */
+    public static void SetGameConfig(GameConfigDto gameConfig)
+    {
+        var config = GetField("gameConfig");
+        if (config.VariantType != Variant.Type.Dictionary)
+        {
+            GD.Print("无法设置游戏配置");
+            return;
+        }
+        Godot.Collections.Dictionary configDict = config.AsGodotDictionary();
+        configDict["width"] = gameConfig.GetWidth();
+        configDict["height"] = gameConfig.GetHeight();
+        configDict["gameType"] = gameConfig.GetGameType().ToString();
+        SetField("gameConfig", configDict);
+    }
+
+
+    /**
+     * 其它读写方法、、、
+     */
+
+
+    /**
+     * 读取并缓存整个 JSON 到本类的 cache
+     */
+    private static Godot.Collections.Dictionary UpdateRoot()
+    {
+        var file = FileAccess.Open(UserDataPath, FileAccess.ModeFlags.Read);
+        string jsonStr = file.GetAsText();
     
-    /**
-     * 保存：将全局 BlockDictionary 序列化后写回 UserData.json 的 Blocks 字段。
-     */
-    public static void SaveDictionaryToUserData()
-    {
-        var blocksArray = new GArray();
-
-        // 把字典里的每个 BlockData 转成 Dictionary
-        foreach (var data in BlockDictionary.GetAll())
+        var json = new Json();
+        Error err = json.Parse(jsonStr);
+        if (err != Error.Ok)
         {
-            var shape = data.GetShape();
-            int rows = shape.GetLength(0);
-            int cols = shape.GetLength(1);
-            var shapeArr = new GArray();
-            for (int i = 0; i < rows; i++)
-            {
-                var row = new GArray();
-                for (int j = 0; j < cols; j++)
-                    row.Add(shape[i, j]);
-                shapeArr.Add(row);
-            }
-
-            var dict = new GDict
-            {
-                ["name"] = data.GetName(),
-                ["texturePath"] = data.GetTexturePath(),
-                ["shaderCode"] = data.GetShaderCode(),
-                ["shape"] = shapeArr
-            };
-            blocksArray.Add(dict);
+            GD.PushError($"UserData JSON 解析失败：{json.GetErrorMessage()}（行 {json.GetErrorLine()}）");
+            return new Godot.Collections.Dictionary();
         }
-
-        var userRoot = new GDict { ["Blocks"] = blocksArray };
-        WriteJsonToFile(UserDataPath, userRoot);
+    
+        Variant result = json.GetData();
+        if (result.VariantType != Variant.Type.Dictionary)
+        {
+            GD.PushError("UserData 根节点不是字典，解析失败。");
+            return new Godot.Collections.Dictionary();
+        }
+    
+        _cachedRoot = result.AsGodotDictionary();
+        return _cachedRoot;
     }
 
     /**
-     * 内部方法：把给定的 Godot.Collections.Dictionary 序列化并写到指定 path。
+     * 清空缓存
      */
-    private static void WriteJsonToFile(string path, GDict root)
+    private static void ClearCache() => _cachedRoot = null;
+
+    /**
+     * 保存当前 root 到文件
+     */
+    public static void Save()
     {
-        // 使用 JSON.Stringify 而不是 JSON.Print
-        // 这里演示美化输出，使用一个 tab 缩进
-        string jsonText = Json.Stringify(root, indent: "\t");
+        var jsonStr = Json.Stringify(UpdateRoot(), indent: "  ");
+        using var file = FileAccess.Open(UserDataPath, FileAccess.ModeFlags.Write);
+        file.StoreString(jsonStr);
+        GD.Print("UserData 保存成功！");
+    }
 
-        // 确保目录存在
-        string dir = Path.GetDirectoryName(path);
-        if (!Directory.Exists(dir))
-            Directory.CreateDirectory(dir);
+    /** 
+     *获取某个大字段
+     */
+    public static Variant GetField(string fieldName)
+    {
+        var root = UpdateRoot();
+        return root.ContainsKey(fieldName) ? root[fieldName] : new Variant();
+    }
 
-        File.WriteAllText(path, jsonText);
+    /**
+     * 精确设置某个大字段（如 gameConfig / blockDatas / records）
+     */
+    public static void SetField(string fieldName, Variant value)
+    {
+        var root = UpdateRoot();
+        root[fieldName] = value;
+    }
+
+    /**
+     * 将 Godot Dictionary 转换为 C# Dictionary
+     */
+    public static System.Collections.Generic.Dictionary<string, Variant> ToCSharpDictionary(Godot.Collections.Dictionary<string, Variant> dict)
+    {
+        var result = new System.Collections.Generic.Dictionary<string, Variant>();
+        foreach (var kvp in dict)
+            result[kvp.Key] = kvp.Value;
+        return result;
+    }
+
+    /**
+     * 将 C# Dictionary 转换为 Godot Dictionary
+     */
+    public static Godot.Collections.Dictionary<string, Variant> ToGodotDictionary(System.Collections.Generic.Dictionary<string, Variant> dict)
+    {
+        var result = new Godot.Collections.Dictionary<string, Variant>();
+        foreach (var kvp in dict)
+            result[kvp.Key] = Variant.From(kvp.Value);
+        return result;
     }
 }
-

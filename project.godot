@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Tetris"
-run/main_scene="uid://be0d4rqj6fyq"
+run/main_scene="uid://bs2s5fd0befph"
 config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 
 [dotnet]

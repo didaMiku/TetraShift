@@ -92,4 +92,6 @@ public static class GlobalConstant
     }
 
     public const string DEFAULT_TEXTURE_PATH = "res://assets/textures/Tetris_black_block.png"; 
+
+    public const string DEFAULT_GRID_PATH = "res://assets/grid/Tetris_black_grid.png";
 }
