@@ -8,11 +8,10 @@ public partial class LogicTest : Node
 {
     private Grid _grid = new Grid(GlobalConstant.GameType.TypeFourWay, 15, 15);
 
-    public override void _Ready()
+    public override void _Ready()   
     {
         JsonService.InitializeUserData();
         // BlockJsonService.ResetUserDataToDefault();
-        JsonService.LoadBlocksToDictionary();
         _grid.HandleOperation(GlobalConstant.BlockOperations.BlockDown);
         GD.Print(BlockDictionary.GetAll().Count());
         GD.Print("逻辑测试已启动，等待键盘输入...");

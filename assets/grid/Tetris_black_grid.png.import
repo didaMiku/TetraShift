@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cupfew05ovgur"
-path="res://.godot/imported/Tetris_black_block.png-e83275a70da059329470556543abe61d.ctex"
+uid="uid://e5rku1m35mbd"
+path="res://.godot/imported/Tetris_black_grid.png-1b45e32c084cfb41293fe8afe813e3e7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Tetris_black_block.png"
-dest_files=["res://.godot/imported/Tetris_black_block.png-e83275a70da059329470556543abe61d.ctex"]
+source_file="res://assets/grid/Tetris_black_grid.png"
+dest_files=["res://.godot/imported/Tetris_black_grid.png-1b45e32c084cfb41293fe8afe813e3e7.ctex"]
 
 [params]
 
