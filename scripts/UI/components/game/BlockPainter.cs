@@ -4,7 +4,7 @@ using Godot;
 using Tetris.scripts.dto;
 using Tetris.scripts.util;
 
-namespace Tetris.scripts.UI;
+namespace Tetris.scripts.UI.components.game;
 
 
 /// <summary>

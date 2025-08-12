@@ -497,8 +497,9 @@ public class Grid
     /**
      * 方法/接口：返回一个当前状态的BlockRenderDto
      */
-    public BlockRenderDto GetBlockRenderDto() =>
-        new BlockRenderDto(_allBlocks, _gameState, _score, _handledCount, _currentBlock, _nextBlock, _gravityDirection, _nextGravityDirection);
+    public BlockRenderDto GetBlockRenderDto() {
+        return new BlockRenderDto(_allBlocks, _gameState, _score, _handledCount, _currentBlock, _nextBlock, _gravityDirection, _nextGravityDirection);
+    }
 
 
 

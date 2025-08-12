@@ -15,15 +15,20 @@ public class GameStateDto
     private int _score;
     private string _currentBlock;
     private string _nextBlock;
+    private GlobalConstant.GravityDirection _currentGravity;
+    private GlobalConstant.GravityDirection _nextGravity;
     private int _handledCount;
 
-    public GameStateDto(int[,] allBlocks, GlobalConstant.GameState gameState, int score, string currentBlock, string nextBlock, int handledCount)
+    public GameStateDto(int[,] allBlocks, GlobalConstant.GameState gameState, int score, string currentBlock, string nextBlock,
+        GlobalConstant.GravityDirection currentGravity, GlobalConstant.GravityDirection nextGravity, int handledCount)
     {
         _allBlocks = allBlocks;
         _gameState = gameState;
         _score = score;
         _currentBlock = currentBlock;
         _nextBlock = nextBlock;
+        _currentGravity = currentGravity;
+        _nextGravity = nextGravity;
         _handledCount = handledCount;
     }
 
@@ -35,6 +40,8 @@ public class GameStateDto
         sb.AppendLine($"GameState: {_gameState}");
         sb.AppendLine($"Current Block: {_currentBlock}");
         sb.AppendLine($"Next Block: {_nextBlock}");
+        sb.AppendLine($"Current Gravity: {_currentGravity}");
+        sb.AppendLine($"Next Gravity: {_nextGravity}");
         sb.AppendLine($"Handled Count: {_handledCount}");
         sb.AppendLine("All Blocks:");
 
@@ -69,6 +76,12 @@ public class GameStateDto
 
     public string GetNextBlock() => _nextBlock;
     public void SetNextBlock(string nextBlock) => _nextBlock = nextBlock;
+
+    public GlobalConstant.GravityDirection GetCurrentGravity() => _currentGravity;
+    public void SetCurrentGravity(GlobalConstant.GravityDirection currentGravity) => _currentGravity = currentGravity;
+
+    public GlobalConstant.GravityDirection GetNextGravity() => _nextGravity;
+    public void SetNextGravity(GlobalConstant.GravityDirection nextGravity) => _nextGravity = nextGravity;
 
     public int GetHandledCount() => _handledCount;
     public void SetHandledCount(int handledCount) => _handledCount = handledCount;

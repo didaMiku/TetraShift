@@ -3,7 +3,7 @@ using System.Linq;
 using Godot;
 using Tetris.scripts.util;
 
-namespace Tetris.scripts.UI;
+namespace Tetris.scripts.UI.components.game;
 
 
 /// <summary>

@@ -101,10 +101,10 @@ public class BlockRenderDto
     public string GetNextBlock() => _nextBlock;
     public void SetNextBlock(string nextBlock) => _nextBlock = nextBlock;
 
-    public string GetGravityDirection() => _gravityDirection.ToString();
+    public GlobalConstant.GravityDirection GetGravityDirection() => _gravityDirection;
     public void SetGravityDirection(GlobalConstant.GravityDirection gravityDirection) => _gravityDirection = gravityDirection;
 
-    public string GetNextGravityDirection() => _nextGravityDirection.ToString();
+    public GlobalConstant.GravityDirection GetNextGravityDirection() => _nextGravityDirection;
     public void SetNextGravityDirection(GlobalConstant.GravityDirection nextGravityDirection) => _nextGravityDirection = nextGravityDirection;
     
     public int GetHandledCount() => _handledCount;

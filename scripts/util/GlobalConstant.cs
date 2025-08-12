@@ -91,6 +91,23 @@ public static class GlobalConstant
         SceneGameSave       // 游戏存档界面
     }
 
+    public static string GetGravityTexturePath(GravityDirection gravityDirection)
+    {
+        switch (gravityDirection)
+        {
+            case GravityDirection.Down:
+                return "res://assets/textures/down.png";
+            case GravityDirection.Up:
+                return "res://assets/textures/up.png";
+            case GravityDirection.Left:
+                return "res://assets/textures/left.png";
+            case GravityDirection.Right:
+                return "res://assets/textures/right.png";
+            default:
+                return "res://assets/textures/down.png";
+        }
+    }
+
     public const string DEFAULT_TEXTURE_PATH = "res://assets/textures/Tetris_black_block.png"; 
 
     public const string DEFAULT_GRID_PATH = "res://assets/grid/Tetris_black_grid.png";
