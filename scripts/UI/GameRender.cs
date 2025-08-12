@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Tetris.scripts.service;
 using Tetris.scripts.util;
+using Tetris.scripts.UI.components.game;
 using Godot;
 
 namespace Tetris.scripts.UI;
@@ -93,7 +94,7 @@ public partial class GameRender : Node2D
         _blockPainterNode.SetBlockPainter(_blockSize, blockRenderArray);
         _blockPainterNode.Position = new Vector2(0, 0);
 
-        GD.Print(_blockSize);
+        GD.Print("block size: " + _blockSize);
 
         GD.Print(blockRenderDto.ToString());
     }
