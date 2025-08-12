@@ -47,6 +47,10 @@ public partial class GameRender : Node2D
      * 方块绘制节点
      */
     private BlockPainter _blockPainterNode;
+    /**
+     * 侧边栏绘制节点
+     */
+    private SideBarPainter _sideBarPainterNode;
 
     /**
      * 构造方法
@@ -61,6 +65,7 @@ public partial class GameRender : Node2D
         _blockSize = Math.Min(_pixelWidth / _width, _pixelHeight / _height);
         _gridPainterNode = new GridPainter();
         _blockPainterNode = new BlockPainter();
+        _sideBarPainterNode = new SideBarPainter();
         _grid = new Grid(_gameType, _width, _height);
     }
     public GameRender()
@@ -73,6 +78,7 @@ public partial class GameRender : Node2D
         _blockSize = Math.Min(_pixelWidth / _width, _pixelHeight / _height);
         _gridPainterNode = new GridPainter(_blockSize, _width, _height);
         _blockPainterNode = new BlockPainter(_blockSize);
+        _sideBarPainterNode = new SideBarPainter();
         _grid = new Grid(_gameType, _width, _height);
     }
 
@@ -82,19 +88,23 @@ public partial class GameRender : Node2D
 
         AddChild(_gridPainterNode);
         AddChild(_blockPainterNode);
-        SideBarPainter sideBarPainter = new SideBarPainter(100, 800, _grid.GetBlockRenderDto());
-        AddChild(sideBarPainter);
+        AddChild(_sideBarPainterNode);
 
         _gridPainterNode.SetGridPainter(_blockSize);
         _gridPainterNode.Position = new Vector2(0, 0);
 
-        _grid = new Grid(GlobalConstant.GameType.TypeClassic, 10, 15);
+        _grid = new Grid(GlobalConstant.GameType.TypeFourWay, 10, 15);
 
         var blockRenderDto = _grid.HandleOperation(GlobalConstant.BlockOperations.BlockDown);
         var blockRenderArray = blockRenderDto.GetBlockRenderArray();
 
         _blockPainterNode.SetBlockPainter(_blockSize, blockRenderArray);
         _blockPainterNode.Position = new Vector2(0, 0);
+
+        _sideBarPainterNode.SetBlockRenderDto(blockRenderDto);
+        _sideBarPainterNode.SetPixelSize(150, 800);
+        _sideBarPainterNode.Position = new Vector2(400, 0);
+        _sideBarPainterNode.PaintSideBar();
 
         GD.Print("block size: " + _blockSize);
 

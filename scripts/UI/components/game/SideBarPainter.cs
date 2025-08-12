@@ -5,7 +5,7 @@ using Tetris.scripts.util;
 
 namespace Tetris.scripts.UI.components.game;
 
-public partial class SideBarPainter : Node
+public partial class SideBarPainter : Node2D
 {
     private int _pixelWidth;
     private int _pixelHeight;
@@ -16,14 +16,16 @@ public partial class SideBarPainter : Node
     {
         _pixelWidth = _pixelHeight = 0;
         _blockRenderDto = null;
-        _mainPanel = null;
-        AddChild(_mainPanel);
     }
     public SideBarPainter(int pixelWidth, int pixelHeight, BlockRenderDto blockRenderDto)
     {
         _pixelWidth = pixelWidth;
         _pixelHeight = pixelHeight;
         _blockRenderDto = blockRenderDto;
+    }
+
+    public override void _Ready()
+    { 
         _mainPanel = new Panel();
         AddChild(_mainPanel);
     }
@@ -68,7 +70,7 @@ public partial class SideBarPainter : Node
     {
         Panel nextBlockContentPanel = new Panel()
         {
-            Size = new Vector2(sideLength, sideLength),
+            CustomMinimumSize = new Vector2(sideLength, sideLength),
         };
         // 获取方块信息，并生成用来渲染和定位方块的Node
         BlockData blockData = BlockDictionary.Get(blockName);
@@ -96,6 +98,7 @@ public partial class SideBarPainter : Node
                         blockSize / texture.GetSize().Y
                     );
                     sprite.Position = new Vector2(x * blockSize - offset, y * blockSize - offset);
+                    sprite.Centered = false;
                     blcokNode.AddChild(sprite);
                 }
             }
@@ -115,14 +118,14 @@ public partial class SideBarPainter : Node
         string nextBlock = _blockRenderDto.GetNextBlock();
         var nextGravityDirection = _blockRenderDto.GetNextGravityDirection();
 
-        Panel scoreTitlePanel = GetFullTextPanel(_pixelWidth, 20, "score");
-        Panel scoreContentPanel = GetFullTextPanel(_pixelWidth, 20, score.ToString());
-        Panel handledCountTitlePanel = GetFullTextPanel(_pixelWidth, 20, "handled blocks");
-        Panel handledCountContentPanel = GetFullTextPanel(_pixelWidth, 20, handledCount.ToString());
-        Panel nextBlockTitlePanel = GetFullTextPanel(_pixelWidth, 20, "next block");
-        Panel nextBlockPanel = GetNextBlockContentPanel(_pixelWidth, nextBlock);
-        Panel nextGravityDirectionTitlePanel = GetFullTextPanel(_pixelWidth, 20, "next gravity");
-        Panel nextGravityDirectionPanel = GetFullTextPanel(_pixelWidth, 20, nextGravityDirection.ToString());
+        Panel scoreTitlePanel = GetFullTextPanel(_pixelWidth, 40, "score");
+        Panel scoreContentPanel = GetFullTextPanel(_pixelWidth, 40, score.ToString());
+        Panel handledCountTitlePanel = GetFullTextPanel(_pixelWidth, 40, "handled blocks");
+        Panel handledCountContentPanel = GetFullTextPanel(_pixelWidth, 40, handledCount.ToString());
+        Panel nextBlockTitlePanel = GetFullTextPanel(_pixelWidth, 40, "next block");
+        Panel nextBlockPanel = GetNextBlockContentPanel(_pixelWidth / 2, nextBlock);
+        Panel nextGravityDirectionTitlePanel = GetFullTextPanel(_pixelWidth, 40, "next gravity");
+        Panel nextGravityDirectionPanel = GetFullTextPanel(_pixelWidth, 40, nextGravityDirection.ToString());
 
         VBoxContainer vBoxContainer = new VBoxContainer();
         vBoxContainer.AddChild(scoreTitlePanel);
