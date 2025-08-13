@@ -5,6 +5,10 @@ using Tetris.scripts.util;
 
 namespace Tetris.scripts.UI.components.game;
 
+
+/// <summary>
+/// 专门用来绘制侧边栏的节点
+/// </summary>
 public partial class SideBarPainter : Node2D
 {
     private int _pixelWidth;
@@ -25,7 +29,7 @@ public partial class SideBarPainter : Node2D
     }
 
     public override void _Ready()
-    { 
+    {
         _mainPanel = new Panel();
         AddChild(_mainPanel);
     }
@@ -34,9 +38,14 @@ public partial class SideBarPainter : Node2D
     {
         _pixelWidth = pixelWidth;
         _pixelHeight = pixelHeight;
+        PaintSideBar();
     }
 
-    public void SetBlockRenderDto(BlockRenderDto blockRenderDto) => _blockRenderDto = blockRenderDto;
+    public void SetBlockRenderDto(BlockRenderDto blockRenderDto)
+    {
+        _blockRenderDto = blockRenderDto;
+        PaintSideBar();
+    }
 
 
 
@@ -136,7 +145,7 @@ public partial class SideBarPainter : Node2D
         vBoxContainer.AddChild(nextBlockPanel);
         vBoxContainer.AddChild(nextGravityDirectionTitlePanel);
         vBoxContainer.AddChild(nextGravityDirectionPanel);
-        
+
         _mainPanel.AddChild(vBoxContainer);
     }
 }

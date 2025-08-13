@@ -104,11 +104,95 @@ public partial class GameRender : Node2D
         _sideBarPainterNode.SetBlockRenderDto(blockRenderDto);
         _sideBarPainterNode.SetPixelSize(150, 800);
         _sideBarPainterNode.Position = new Vector2(400, 0);
-        _sideBarPainterNode.PaintSideBar();
 
         GD.Print("block size: " + _blockSize);
 
         GD.Print(blockRenderDto.ToString());
+    }
+
+
+    private float _tickTimer = 0f;
+    private float _tickInterval = 1.0f; // 每 0.1 秒一次（即 10 tick 每秒）
+
+    public override void _Process(double delta)
+    {
+        _tickTimer += (float)delta;
+        while (_tickTimer >= _tickInterval)
+        {
+            _tickTimer -= _tickInterval;
+            var blockRenderDto = _grid.HandleOperation(GlobalConstant.BlockOperations.BlockTick); // 调用你的 Tick 逻辑
+            _sideBarPainterNode.SetBlockRenderDto(blockRenderDto);
+            _blockPainterNode.SetBlockPainter(_blockSize, blockRenderDto.GetBlockRenderArray());
+
+            GD.Print($"输入: Tick => 输出: \n{blockRenderDto}");
+        }
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey eventKey && eventKey.Pressed)
+        {
+            string input = GetInputCommand(eventKey);
+            if (!string.IsNullOrEmpty(input))
+            {
+                Simulate(input);
+            }
+        }
+    }
+
+    private void Simulate(string input)
+    {
+        var operation = MapInputToOperation(input);
+        if (operation == null)
+        {
+            GD.Print("无效指令: " + input);
+            return;
+        }
+
+        var blockRenderDto = _grid.HandleOperation(operation.Value);
+        GD.Print($"输入: {input} => 输出: \n{blockRenderDto}");
+
+        _sideBarPainterNode.SetBlockRenderDto(blockRenderDto);
+        _sideBarPainterNode.PaintSideBar();
+        _blockPainterNode.SetBlockPainter(_blockSize, blockRenderDto.GetBlockRenderArray());
+    }
+
+    private GlobalConstant.BlockOperations? MapInputToOperation(string input)
+    {
+        switch (input.ToLower())
+        {
+            case "left": return GlobalConstant.BlockOperations.BlockLeft;
+            case "right": return GlobalConstant.BlockOperations.BlockRight;
+            case "up": return GlobalConstant.BlockOperations.BlockUp;
+            case "down": return GlobalConstant.BlockOperations.BlockDown;
+            case "spinright": return GlobalConstant.BlockOperations.BlockSpinRight;
+            case "spinleft": return GlobalConstant.BlockOperations.BlockSpinLeft;
+            case "fall": return GlobalConstant.BlockOperations.BlockFall;
+            default: return null;
+        }
+    }
+
+    private string GetInputCommand(InputEventKey eventKey)
+    {
+        switch (eventKey.Keycode)
+        {
+            case Key.Left:
+                return "Left";
+            case Key.Right:
+                return "Right";
+            case Key.Up:
+                return "Up";
+            case Key.Down:
+                return "Down";
+            case Key.Q:
+                return "SpinLeft";
+            case Key.E:
+                return "SpinRight";
+            case Key.Space:
+                return "Fall";
+            default:
+                return null;
+        }
     }
 
 
