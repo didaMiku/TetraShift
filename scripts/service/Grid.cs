@@ -281,7 +281,7 @@ public class Grid
             for (int j = 0; j < cellCount; j++)
             {
                 var (sy, sx) = srcMap(lineIndex, j);
-                if (_deadBlocks[sy, sx] == null || _deadBlocks[sy, sx].GetRenderType() != GlobalConstant.BlockRenderType.RenderShadow)
+                if (_deadBlocks[sy, sx] == null || _deadBlocks[sy, sx].GetRenderType() != GlobalConstant.BlockRenderType.RenderShow)
                 {
                     isFull = false;
                     break;
