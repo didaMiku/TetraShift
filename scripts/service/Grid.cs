@@ -109,7 +109,9 @@ public class Grid
         _random = new Random();
         _score = 0;
         _handledCount = 0;
-        _gravityDirection = _nextGravityDirection = GlobalConstant.GravityDirection.Down;
+        _nextGravityDirection = GlobalConstant.GravityDirection.Down;
+        GetNewGravityDirection();
+        GetNewGravityDirection();
     }
 
 
