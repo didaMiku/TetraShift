@@ -10,6 +10,9 @@ namespace Tetris.scripts.util;
 /// </summary>
 public static class BlockDictionary
 {
+    /**
+     * C#自带字典和Godot字典有方法上的区别，这里使用C#自带字典
+     */
     private static Dictionary<string, BlockData> _data = new();
 
     public static bool Add(string name, BlockData data)

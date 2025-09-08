@@ -7,20 +7,32 @@ using Tetris.scripts.dto;
 using Tetris.scripts.util;
 
 
+namespace Tetris.scripts.util;
+
 /// <summary>
 /// JSON 读写服务
 /// </summary>
 public static class JsonService
 {
+    /**
+     * 默认数据路径
+     */
     private static readonly string DefaultDataPath = "res://scripts/DefaultData.json";
+    /**
+     * 用户数据路径，服务于用户自定义内容
+     */
     private static readonly string UserDataPath = System.IO.Path.Combine(OS.GetUserDataDir(), "UserData.json");
-    private static Godot.Collections.Dictionary _cachedRoot; // GDict 缓存
+    /**
+     * 缓存整个JSON文件为一个字典简化数据处理
+     */
+    private static Godot.Collections.Dictionary _cachedRoot;
 
     /**
      * 初始化用户数据
      */
     public static void InitializeUserData()
     {
+        // 如果不存在用户数据代表第一次安装或已清理
         if (FileAccess.FileExists(UserDataPath))
         {
             GD.Print("UserData 已存在，跳过初始化。地址：" + UserDataPath);
@@ -47,12 +59,14 @@ public static class JsonService
     public static void UpdateBlockDictionary()
     {
         var blockData = GetField("blockData");
+        // 确认 blockData 为数组
         if (blockData.VariantType != Variant.Type.Array)
         {
             return;
         }
         Godot.Collections.Array blockDataArray = blockData.AsGodotArray();
         BlockDictionary.Clear();
+        // 此时每个 data 均为单个方块的全部信息
         foreach (var data in blockDataArray)
         {
             if (data.VariantType != Variant.Type.Dictionary)
@@ -60,26 +74,34 @@ public static class JsonService
                 GD.PushWarning("blockData 中存在非字典元素，已跳过");
                 continue;
             }
+            // 转换为字典的格式，并获取各个字段的值
             var blockDict = (Godot.Collections.Dictionary)data;
             string name = (string)blockDict["name"];
             string texturePath = (string)blockDict["texturePath"];
             string shaderCode = (string)blockDict["shaderCode"];
             // 二维数组较为特殊，需要单独处理
             var shapeArrayVariant = blockDict["shape"];
-            var shapeRows = shapeArrayVariant.AsGodotArray();
-            int rowCount = shapeRows.Count;
-            int colCount = ((Godot.Collections.Array)shapeRows[0]).Count;
-            int[,] shape = new int[rowCount, colCount];
+            var shapeRows = shapeArrayVariant.AsGodotArray();   // 使用List装载二位int数组
+            int rowCount = shapeRows.Count;// 计算行数
+            // 找到最长的一行作为 colCount
+            int colCount = 0;
             for (int i = 0; i < rowCount; i++)
             {
                 var row = (Godot.Collections.Array)shapeRows[i];
-                for (int j = 0; j < colCount; j++)
-                {
-                    shape[i, j] = (int)(long)row[j]; // 注意 Variant → long → int
-                }
+                colCount = Math.Max(colCount, row.Count);
+            }
+            // 初始化二维数组
+            int[,] shape = new int[rowCount, colCount];
+            // 逐行复制数据
+            for (int i = 0; i < rowCount; i++)
+            {
+                var row = (Godot.Collections.Array)shapeRows[i];
+                for (int j = 0; j < row.Count; j++)     // 遍历这一行已有的列
+                    shape[i, j] = (int)(long)row[j];    // Godot Variant 转 C# 需要先转 long 再转 int
+                // 如果这一行列数不足，剩余位置保持默认值 0
             }
             // 添加到字典
-            BlockDictionary.Add(name, new BlockData(name, (int[,])shape, texturePath, shaderCode));
+            BlockDictionary.Add(name, new BlockData(name, shape, texturePath, shaderCode));
         }
     }
 
@@ -132,7 +154,7 @@ public static class JsonService
         {
             case "TypeClassic":
                 return new GameConfigDto(width, height, GlobalConstant.GameType.TypeClassic);
-            case "TypeTetris":
+            case "TypeFourWay":
                 return new GameConfigDto(width, height, GlobalConstant.GameType.TypeFourWay);
             default:
                 GD.Print("无法获取游戏类型");
@@ -171,7 +193,7 @@ public static class JsonService
     {
         var file = FileAccess.Open(UserDataPath, FileAccess.ModeFlags.Read);
         string jsonStr = file.GetAsText();
-    
+
         var json = new Json();
         Error err = json.Parse(jsonStr);
         if (err != Error.Ok)
@@ -179,14 +201,14 @@ public static class JsonService
             GD.PushError($"UserData JSON 解析失败：{json.GetErrorMessage()}（行 {json.GetErrorLine()}）");
             return new Godot.Collections.Dictionary();
         }
-    
+
         Variant result = json.GetData();
         if (result.VariantType != Variant.Type.Dictionary)
         {
             GD.PushError("UserData 根节点不是字典，解析失败。");
             return new Godot.Collections.Dictionary();
         }
-    
+
         _cachedRoot = result.AsGodotDictionary();
         return _cachedRoot;
     }
@@ -212,8 +234,7 @@ public static class JsonService
      */
     public static Variant GetField(string fieldName)
     {
-        var root = UpdateRoot();
-        return root.ContainsKey(fieldName) ? root[fieldName] : new Variant();
+        return _cachedRoot.ContainsKey(fieldName) ? _cachedRoot[fieldName] : new Variant();
     }
 
     /**
@@ -221,8 +242,7 @@ public static class JsonService
      */
     public static void SetField(string fieldName, Variant value)
     {
-        var root = UpdateRoot();
-        root[fieldName] = value;
+        _cachedRoot[fieldName] = value;
     }
 
     /**
@@ -235,7 +255,6 @@ public static class JsonService
             result[kvp.Key] = kvp.Value;
         return result;
     }
-
     /**
      * 将 C# Dictionary 转换为 Godot Dictionary
      */
