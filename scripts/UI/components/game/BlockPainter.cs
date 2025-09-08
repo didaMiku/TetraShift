@@ -57,6 +57,7 @@ public partial class BlockPainter : Node2D
     {
         var sprite = new Sprite2D();
         var texture = GD.Load<Texture2D>(blockRenderData.GetTexturePath());
+        sprite.Centered = false;
         sprite.Texture = texture;
         sprite.Position = new Vector2(position.X * _blockSize, position.Y * _blockSize);
         sprite.Scale = new Vector2(
@@ -72,6 +73,11 @@ public partial class BlockPainter : Node2D
     public void SetBlockPainter(int blockSize, BlockRenderData[,] blockRenderArray)
     {
         _blockSize = blockSize;
+        _blockRenderArray = blockRenderArray;
+        PaintBlocks();
+    }
+    public void SetBlockPainter(BlockRenderData[,] blockRenderArray)
+    {
         _blockRenderArray = blockRenderArray;
         PaintBlocks();
     }

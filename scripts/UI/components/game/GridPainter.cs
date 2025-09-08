@@ -58,6 +58,7 @@ public partial class GridPainter : Node2D
     {
         var sprite = new Sprite2D();
         var texture = GD.Load<Texture2D>(GlobalConstant.DEFAULT_GRID_PATH);
+        sprite.Centered = false;
         sprite.Texture = texture;
         sprite.Position = new Vector2(position.X * _cellSize, position.Y * _cellSize);
         sprite.Scale = new Vector2(
@@ -70,6 +71,13 @@ public partial class GridPainter : Node2D
     /**
      * 有变动时重新设置参数并更新绘制
      */
+    public void SetGridPainter(int gridWidth, int gridHeight, int cellSize)
+    {
+        _gridWidth = gridWidth;
+        _gridHeight = gridHeight;
+        _cellSize = cellSize;
+        PaintGrid();
+    }
     public void SetGridPainter(int cellSize)
     {
         _cellSize = cellSize;

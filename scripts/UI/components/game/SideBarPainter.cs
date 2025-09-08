@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Godot;
 using Tetris.scripts.dto;
 using Tetris.scripts.util;
@@ -36,6 +37,7 @@ public partial class SideBarPainter : Node2D
 
     public void SetPixelSize(int pixelWidth, int pixelHeight)
     {
+        ClearAllChildren();
         _pixelWidth = pixelWidth;
         _pixelHeight = pixelHeight;
         PaintSideBar();
@@ -43,8 +45,22 @@ public partial class SideBarPainter : Node2D
 
     public void SetBlockRenderDto(BlockRenderDto blockRenderDto)
     {
+        ClearAllChildren();
         _blockRenderDto = blockRenderDto;
         PaintSideBar();
+    }
+
+
+    /**
+     * 清空所有子节点
+     */
+    private void ClearAllChildren()
+    {
+        foreach (Node node in _mainPanel.GetChildren().ToArray())
+        {
+            _mainPanel.RemoveChild(node);
+            node.QueueFree();
+        }
     }
 
 
