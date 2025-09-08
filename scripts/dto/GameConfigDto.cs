@@ -29,4 +29,13 @@ public class GameConfigDto
     public void SetHeight(int height) => _height = height;
     public GlobalConstant.GameType GetGameType() => _gameType;
     public void SetGameType(GlobalConstant.GameType gameType) => _gameType = gameType;
+
+    public override String ToString()
+    {
+        return "GameConfigDto{" +
+                "width=" + _width +
+                ", height=" + _height +
+                ", gameType=" + _gameType +
+                '}';
+    }
 }
