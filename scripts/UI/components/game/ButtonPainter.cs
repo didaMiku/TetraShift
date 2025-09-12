@@ -84,7 +84,7 @@ public partial class ButtonPainter : Node2D
         _gameView = GetParent<GameView>();
     }
 
-    private void OnPauseButtonPressed() { }
+    private void OnPauseButtonPressed() { _gameView?.GamePause(); }
     private void OnSpinACWButtonPressed() { _gameView?.HandleInput(GlobalConstant.BlockOperations.BlockSpinLeft); }
     private void OnSpinCWButtonPressed() { _gameView?.HandleInput(GlobalConstant.BlockOperations.BlockSpinRight); }
     private void OnMoveUpButtonPressed() { _gameView?.HandleInput(GlobalConstant.BlockOperations.BlockUp); }
