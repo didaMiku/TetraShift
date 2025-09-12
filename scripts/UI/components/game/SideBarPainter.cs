@@ -32,15 +32,16 @@ public partial class SideBarPainter : Node2D
     public override void _Ready()
     {
         _mainPanel = new Panel();
+        _mainPanel.CustomMinimumSize = new Vector2(_pixelWidth, _pixelHeight);
+        _mainPanel.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+        _mainPanel.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
         AddChild(_mainPanel);
     }
 
     public void SetPixelSize(int pixelWidth, int pixelHeight)
     {
-        ClearAllChildren();
         _pixelWidth = pixelWidth;
         _pixelHeight = pixelHeight;
-        PaintSideBar();
     }
 
     public void SetBlockRenderDto(BlockRenderDto blockRenderDto)
@@ -74,6 +75,17 @@ public partial class SideBarPainter : Node2D
         {
             CustomMinimumSize = new Vector2(width, height),
         };
+        var style = new StyleBoxFlat
+        {
+            BgColor = new Color(0, 0, 0, 0), // 背景透明
+            BorderColor = new Color(0, 0, 0), // 边框颜色（黑色）
+            BorderWidthTop = 1, // 边框
+            BorderWidthLeft = 1,
+            BorderWidthRight = 1,
+            BorderWidthBottom = 1,
+            DrawCenter = false
+        };
+        resultPanel.AddThemeStyleboxOverride("panel", style);
         Label resultTextLabel = new Label()
         {
             Text = text,
@@ -83,6 +95,7 @@ public partial class SideBarPainter : Node2D
             AnchorBottom = 1,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
+            
         };
         resultPanel.AddChild(resultTextLabel);
         return resultPanel;
@@ -97,6 +110,17 @@ public partial class SideBarPainter : Node2D
         {
             CustomMinimumSize = new Vector2(sideLength, sideLength),
         };
+        var style = new StyleBoxFlat
+        {
+            BgColor = new Color(0, 0, 0, 0), // 背景透明
+            BorderColor = new Color(0, 0, 0), // 边框颜色（黑色）
+            BorderWidthTop = 1, // 边框
+            BorderWidthLeft = 1,
+            BorderWidthRight = 1,
+            BorderWidthBottom = 1,
+            DrawCenter = false
+        };
+        nextBlockContentPanel.AddThemeStyleboxOverride("panel", style);
         // 获取方块信息，并生成用来渲染和定位方块的Node
         BlockData blockData = BlockDictionary.Get(blockName);
         int[,] blockArray = blockData.GetShape();
@@ -142,15 +166,16 @@ public partial class SideBarPainter : Node2D
         int handledCount = _blockRenderDto.GetHandledCount();
         string nextBlock = _blockRenderDto.GetNextBlock();
         var nextGravityDirection = _blockRenderDto.GetNextGravityDirection();
+        int cellHeight = _pixelHeight / 10;
 
-        Panel scoreTitlePanel = GetFullTextPanel(_pixelWidth, 40, "score");
-        Panel scoreContentPanel = GetFullTextPanel(_pixelWidth, 40, score.ToString());
-        Panel handledCountTitlePanel = GetFullTextPanel(_pixelWidth, 40, "handled blocks");
-        Panel handledCountContentPanel = GetFullTextPanel(_pixelWidth, 40, handledCount.ToString());
-        Panel nextBlockTitlePanel = GetFullTextPanel(_pixelWidth, 40, "next block");
-        Panel nextBlockPanel = GetNextBlockContentPanel(_pixelWidth / 2, nextBlock);
-        Panel nextGravityDirectionTitlePanel = GetFullTextPanel(_pixelWidth, 40, "next gravity");
-        Panel nextGravityDirectionPanel = GetFullTextPanel(_pixelWidth, 40, nextGravityDirection.ToString());
+        Panel scoreTitlePanel = GetFullTextPanel(_pixelWidth, cellHeight, "score");
+        Panel scoreContentPanel = GetFullTextPanel(_pixelWidth, cellHeight, score.ToString());
+        Panel handledCountTitlePanel = GetFullTextPanel(_pixelWidth, cellHeight, "handled blocks");
+        Panel handledCountContentPanel = GetFullTextPanel(_pixelWidth, cellHeight, handledCount.ToString());
+        Panel nextBlockTitlePanel = GetFullTextPanel(_pixelWidth, cellHeight, "next block");
+        Panel nextBlockPanel = GetNextBlockContentPanel(cellHeight * 3, nextBlock);
+        Panel nextGravityDirectionTitlePanel = GetFullTextPanel(_pixelWidth, cellHeight, "next gravity");
+        Panel nextGravityDirectionPanel = GetFullTextPanel(_pixelWidth, cellHeight, nextGravityDirection.ToString());
 
         VBoxContainer vBoxContainer = new VBoxContainer();
         vBoxContainer.AddChild(scoreTitlePanel);
