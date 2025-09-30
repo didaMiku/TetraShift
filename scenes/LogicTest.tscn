@@ -1,7 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://bs2s5fd0befph"]
+[gd_scene load_steps=3 format=3 uid="uid://bs2s5fd0befph"]
 
-[ext_resource type="Script" uid="uid://c1qkot6kye7vn" path="res://scripts/UI/GameRender.cs" id="1_nuvnu"]
+[ext_resource type="Script" uid="uid://dqqyui72vdw86" path="res://scripts/UI/views/GameView.cs" id="1_nuvnu"]
+[ext_resource type="Texture2D" uid="uid://bpkvhvov2qte6" path="res://assets/grey_background.png" id="2_iihaf"]
 
 [node name="Node2D" type="Node2D"]
-position = Vector2(34, 22)
 script = ExtResource("1_nuvnu")
+
+[node name="GreyBackground" type="Sprite2D" parent="."]
+position = Vector2(300, 450)
+texture = ExtResource("2_iihaf")
