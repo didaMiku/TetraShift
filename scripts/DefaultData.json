@@ -62,5 +62,15 @@
     "width": 10,
     "height": 15,
     "gameType": "TypeClassic"
+  },
+
+  "gridConfig": {
+    "texturePath": "res://assets/grid/Tetris_black_grid.png",
+    "shaderCode": ""
+  },
+
+  "backgroundConfig": {
+    "texturePath": "",
+    "shaderCode": ""
   }
 }
