@@ -4,7 +4,7 @@ using Tetris.scripts.dto;
 
 namespace Tetris.scripts.UI.components.game;
 
-public partial class SideBarPainter : Node2D
+public partial class Draft : Node2D
 {
     private int _pixelWidth;
     private int _pixelHeight;
@@ -14,15 +14,11 @@ public partial class SideBarPainter : Node2D
 
     public override void _Ready()
     {
-        var emptyStyle = new StyleBoxEmpty();
-
         _mainPanel = new Panel();
-        _mainPanel.AddThemeStyleboxOverride("panel", emptyStyle);
         AddChild(_mainPanel);
 
         _vBoxContainer = new VBoxContainer();
         _vBoxContainer.AddThemeConstantOverride("separation", 0);
-        _mainPanel.AddThemeStyleboxOverride("panel", emptyStyle);
         _mainPanel.AddChild(_vBoxContainer);
     }
 
@@ -47,7 +43,6 @@ public partial class SideBarPainter : Node2D
         if (blockRenderDto == null)
             return;
         _blockRenderDto = blockRenderDto;
-        PaintSideBar();
     }
 
     private Panel GetFullTextPanel(int width, int height, string text)
@@ -68,7 +63,7 @@ public partial class SideBarPainter : Node2D
             BorderWidthBottom = 1,
             DrawCenter = false
         };
-        // cell.AddThemeStyleboxOverride("panel", simpleStyle);
+        cell.AddThemeStyleboxOverride("panel", simpleStyle);
 
         Label textLabel = new Label()
         {
@@ -80,7 +75,7 @@ public partial class SideBarPainter : Node2D
             AnchorRight = 1,
             AnchorBottom = 1,
             SizeFlagsHorizontal = Control.SizeFlags.Fill,
-            SizeFlagsVertical = Control.SizeFlags.Fill,
+            SizeFlagsVertical = Control.SizeFlags.Fill
         };
         cell.AddChild(textLabel);
 
@@ -98,7 +93,7 @@ public partial class SideBarPainter : Node2D
         _vBoxContainer.AddChild(GetFullTextPanel(_pixelWidth, _pixelHeight / 10, "handled blocks"));
         _vBoxContainer.AddChild(GetFullTextPanel(_pixelWidth, _pixelHeight / 10, _blockRenderDto.GetHandledCount().ToString()));
         _vBoxContainer.AddChild(GetFullTextPanel(_pixelWidth, _pixelHeight / 10, "next block"));
-        _vBoxContainer.AddChild(GetFullTextPanel(_pixelWidth, _pixelHeight / 10 * 2, _blockRenderDto.GetNextBlock()));
+        _vBoxContainer.AddChild(GetFullTextPanel(_pixelWidth, _pixelHeight / 10, _blockRenderDto.GetNextBlock()));
         _vBoxContainer.AddChild(GetFullTextPanel(_pixelWidth, _pixelHeight / 10, "next gravity"));
         _vBoxContainer.AddChild(GetFullTextPanel(_pixelWidth, _pixelHeight / 10, _blockRenderDto.GetNextGravityDirection().ToString()));
     }

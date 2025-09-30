@@ -4,6 +4,7 @@ using Tetris.scripts.service;
 using Tetris.scripts.util;
 using Tetris.scripts.UI.components.game;
 using Godot;
+using Tetris.scripts.dto;
 
 namespace Tetris.scripts.UI;
 
@@ -28,6 +29,10 @@ public partial class GameRender : Node2D
      */
     private GlobalConstant.GameType _gameType;
     /**
+     * 游戏配置DTO
+     */
+    private GameConfigDto _gameConfigDto;
+    /**
      * 游戏底层逻辑对象
      */
     private Grid _grid;
@@ -51,6 +56,8 @@ public partial class GameRender : Node2D
      * 侧边栏绘制节点
      */
     private SideBarPainter _sideBarPainterNode;
+
+    private ButtonPainter _buttonPainterNode;
 
     /**
      * 构造方法
@@ -85,15 +92,24 @@ public partial class GameRender : Node2D
     public override void _Ready()
     {
         JsonService.InitializeUserData();
+        _gameConfigDto = JsonService.GetGameConfig();
+
+        GD.Print(_gameConfigDto.ToString());
+
+        _width = _gameConfigDto.GetWidth();
+        _height = _gameConfigDto.GetHeight();
+        _gameType = _gameConfigDto.GetGameType();
 
         AddChild(_gridPainterNode);
         AddChild(_blockPainterNode);
         AddChild(_sideBarPainterNode);
 
+        _gridPainterNode.SetGridWidth(_width);
+        _gridPainterNode.SetGridHeight(_height);
         _gridPainterNode.SetGridPainter(_blockSize);
         _gridPainterNode.Position = new Vector2(0, 0);
 
-        _grid = new Grid(GlobalConstant.GameType.TypeFourWay, 10, 15);
+        _grid = new Grid(_gameType, _width, _height);
 
         var blockRenderDto = _grid.HandleOperation(GlobalConstant.BlockOperations.BlockDown);
         var blockRenderArray = blockRenderDto.GetBlockRenderArray();
@@ -104,6 +120,10 @@ public partial class GameRender : Node2D
         _sideBarPainterNode.SetBlockRenderDto(blockRenderDto);
         _sideBarPainterNode.SetPixelSize(150, 800);
         _sideBarPainterNode.Position = new Vector2(400, 0);
+
+        _buttonPainterNode = new ButtonPainter();
+        AddChild(_buttonPainterNode);
+        _buttonPainterNode.Position = new Vector2(0, 600);
 
         GD.Print("block size: " + _blockSize);
 
@@ -130,34 +150,29 @@ public partial class GameRender : Node2D
 
     public override void _Input(InputEvent @event)
     {
+        Simulate(@event);
+    }
+
+    private void Simulate(InputEvent @event)
+    {
         if (@event is InputEventKey eventKey && eventKey.Pressed)
         {
-            string input = GetInputCommand(eventKey);
-            if (!string.IsNullOrEmpty(input))
+            string input = MapEventKeyToString(eventKey);
+            var operation = MapStringToOperation(input);
+            if (operation == null)
             {
-                Simulate(input);
+                GD.Print("无效指令: " + input);
+                return;
             }
+            var blockRenderDto = _grid.HandleOperation(operation.Value);
+            GD.Print($"输入: {input} => 输出: \n{blockRenderDto}");
+
+            _sideBarPainterNode.SetBlockRenderDto(blockRenderDto);
+            _blockPainterNode.SetBlockPainter(_blockSize, blockRenderDto.GetBlockRenderArray());
         }
     }
 
-    private void Simulate(string input)
-    {
-        var operation = MapInputToOperation(input);
-        if (operation == null)
-        {
-            GD.Print("无效指令: " + input);
-            return;
-        }
-
-        var blockRenderDto = _grid.HandleOperation(operation.Value);
-        GD.Print($"输入: {input} => 输出: \n{blockRenderDto}");
-
-        _sideBarPainterNode.SetBlockRenderDto(blockRenderDto);
-        _sideBarPainterNode.PaintSideBar();
-        _blockPainterNode.SetBlockPainter(_blockSize, blockRenderDto.GetBlockRenderArray());
-    }
-
-    private GlobalConstant.BlockOperations? MapInputToOperation(string input)
+    private GlobalConstant.BlockOperations? MapStringToOperation(string input)
     {
         switch (input.ToLower())
         {
@@ -172,7 +187,7 @@ public partial class GameRender : Node2D
         }
     }
 
-    private string GetInputCommand(InputEventKey eventKey)
+    private string MapEventKeyToString(InputEventKey eventKey)
     {
         switch (eventKey.Keycode)
         {

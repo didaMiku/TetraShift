@@ -10,6 +10,9 @@ namespace Tetris.scripts.UI.components.game;
 /// </summary>
 public partial class ButtonPainter : Node2D
 {
+    private int _pixelWidth;
+    private int _pixelHeight;
+    private int _buttonSize;
     private Button _pauseButton;
     private Button _spinACWButton;
     private Button _spinCWButton;
@@ -20,49 +23,20 @@ public partial class ButtonPainter : Node2D
     private Button _dropButton;
     private GameView _gameView;
 
+    public ButtonPainter()
+    {
+        _pauseButton = new Button();
+        _spinACWButton = new Button();
+        _spinCWButton = new Button();
+        _moveUpButton = new Button();
+        _moveDownButton = new Button();
+        _moveLeftButton = new Button();
+        _moveRightButton = new Button();
+        _dropButton = new Button();
+    }
+
     public override void _Ready()
     {
-        // 暂停
-        _pauseButton = new Button();
-        _pauseButton.Position = new Vector2(33, 200);
-        _pauseButton.Size = new Vector2(66, 66);
-        _pauseButton.Text = "暂停";
-        // 逆时针旋转
-        _spinACWButton = new Button();
-        _spinACWButton.Position = new Vector2(33, 50);
-        _spinACWButton.Size = new Vector2(66, 66);
-        _spinACWButton.Text = "逆时针旋转";
-        // 顺时针旋转
-        _spinCWButton = new Button();
-        _spinCWButton.Position = new Vector2(166, 50);
-        _spinCWButton.Size = new Vector2(66, 66);
-        _spinCWButton.Text = "顺时针旋转";
-        // 上移
-        _moveUpButton = new Button();
-        _moveUpButton.Position = new Vector2(400, 33);
-        _moveUpButton.Size = new Vector2(66, 66);
-        _moveUpButton.Text = "上移";
-        // 下移
-        _moveDownButton = new Button();
-        _moveDownButton.Position = new Vector2(400, 200);
-        _moveDownButton.Size = new Vector2(66, 66);
-        _moveDownButton.Text = "下移";
-        // 左移
-        _moveLeftButton = new Button();
-        _moveLeftButton.Position = new Vector2(300, 116);
-        _moveLeftButton.Size = new Vector2(66, 66);
-        _moveLeftButton.Text = "左移";
-        // 右移
-        _moveRightButton = new Button();
-        _moveRightButton.Position = new Vector2(500, 116);
-        _moveRightButton.Size = new Vector2(66, 66);
-        _moveRightButton.Text = "右移";
-        // 下落
-        _dropButton = new Button();
-        _dropButton.Position = new Vector2(400, 116);
-        _dropButton.Size = new Vector2(66, 66);
-        _dropButton.Text = "下落";
-
         AddChild(_pauseButton);
         AddChild(_spinACWButton);
         AddChild(_spinCWButton);
@@ -81,7 +55,51 @@ public partial class ButtonPainter : Node2D
         _moveRightButton.Pressed += OnMoveRightButtonPressed;
         _dropButton.Pressed += OnDropButtonPressed;
 
-        _gameView = GetParent<GameView>();
+        _gameView = GetParent<ButtonContainer>().GetParent<GameView>();
+    }
+
+    public void PaintButton()
+    {
+        // 暂停
+        _pauseButton.Size = new Vector2(_buttonSize, _buttonSize);
+        _pauseButton.Position = new Vector2(0.125f * _pixelWidth - _pauseButton.Size.X / 2, 0.666f * _pixelHeight - _pauseButton.Size.Y / 2);
+        _pauseButton.Text = "Pause";
+        // 逆时针旋转
+        _spinACWButton.Size = new Vector2(_buttonSize, _buttonSize);
+        _spinACWButton.Position = new Vector2(0.125f * _pixelWidth - _spinACWButton.Size.X / 2, 0.25f * _pixelHeight - _spinACWButton.Size.Y / 2);
+        _spinACWButton.Text = "Spin ACW";
+        // 顺时针旋转
+        _spinCWButton.Size = new Vector2(_buttonSize, _buttonSize);
+        _spinCWButton.Position = new Vector2(0.333f * _pixelWidth - _spinCWButton.Size.X / 2, 0.25f * _pixelHeight - _spinCWButton.Size.Y / 2);
+        _spinCWButton.Text = "Spin CW";
+        // 上移
+        _moveUpButton.Size = new Vector2(_buttonSize, _buttonSize);
+        _moveUpButton.Position = new Vector2(0.75f * _pixelWidth - _moveUpButton.Size.X / 2, 0.166f * _pixelHeight - _moveUpButton.Size.Y / 2);
+        _moveUpButton.Text = "Move Up";
+        // 下移
+        _moveDownButton.Size = new Vector2(_buttonSize, _buttonSize);
+        _moveDownButton.Position = new Vector2(0.75f * _pixelWidth - _moveDownButton.Size.X / 2, 0.833f * _pixelHeight - _moveDownButton.Size.Y / 2);
+        _moveDownButton.Text = "Move Down";
+        // 左移
+        _moveLeftButton.Size = new Vector2(_buttonSize, _buttonSize);
+        _moveLeftButton.Position = new Vector2(0.583f * _pixelWidth - _moveLeftButton.Size.X / 2, 0.5f * _pixelHeight - _moveLeftButton.Size.Y / 2);
+        _moveLeftButton.Text = "Move Left";
+        // 右移
+        _moveRightButton.Size = new Vector2(_buttonSize, _buttonSize);
+        _moveRightButton.Position = new Vector2(0.916f * _pixelWidth - _moveRightButton.Size.X / 2, 0.5f * _pixelHeight - _moveRightButton.Size.Y / 2);
+        _moveRightButton.Text = "Move Right";
+        // 下落
+        _dropButton.Size = new Vector2(_buttonSize, _buttonSize);
+        _dropButton.Position = new Vector2(0.75f * _pixelWidth - _dropButton.Size.X / 2, 0.5f * _pixelHeight - _dropButton.Size.Y / 2);
+        _dropButton.Text = "Drop";
+    }
+
+    public void SetButtonPainter(int pixelWidth, int pixelHeight, int buttonSize)
+    {
+        _pixelWidth = pixelWidth;
+        _pixelHeight = pixelHeight;
+        _buttonSize = buttonSize;
+        GD.Print(_pixelWidth + " " + _pixelHeight + " " + _buttonSize);
     }
 
     private void OnPauseButtonPressed() { _gameView?.GamePause(); }
